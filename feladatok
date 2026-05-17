@@ -1,0 +1,693 @@
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Hantos-console
+----------------
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.IO;
+
+namespace ConsoleApp1
+{
+    internal class Auto
+    {
+        public int Sorszam { get; set; }
+        public string Marka { get; set; }
+        public string Modell { get; set; }
+        public int GyartasiEv { get; set; }
+        public string Szin { get; set; }
+        public int Eladott { get; set; }
+        public int AtlagosAr { get; set; }
+
+        public Auto(string sor) 
+        {
+            string[] sor2 = sor.Split(';');
+            
+
+            Sorszam = Convert.ToInt32(sor2[0]);
+            Marka = sor2[1];
+            Modell = sor2[2];
+            GyartasiEv = Convert.ToInt32(sor2[3]);
+            Szin = sor2[4];
+            Eladott = Convert.ToInt32(sor2[5]);
+            AtlagosAr = Convert.ToInt32(sor2[6]);
+        }
+
+        public static List<Auto> Beolvasas(string fajlnev)
+        {
+            List<Auto> autok = new List<Auto>();
+            string[] sorok = File.ReadAllLines(fajlnev);
+            for (int i = 1; i < sorok.Length; i++)
+            {
+                if (!string.IsNullOrWhiteSpace(sorok[i]))
+                {
+                    autok.Add(new Auto(sorok[i]));
+                }
+            }
+            return autok;
+        }
+    }
+
+
+    internal class Program
+    {
+        static List<Auto> autok = new List<Auto>();
+
+        static void Main(string[] args)
+        {
+            Feladat4();
+            Feladat5();
+            Feladat6();
+            Feladat7();
+            Feladat8();
+            
+            Console.ReadKey();
+        }
+
+        static void Feladat4()
+        {
+            autok = Auto.Beolvasas("autok.csv");
+        }
+
+        static void Feladat5()
+        {
+            Console.WriteLine("5.feladat: {0} autó található a listában.", autok.Count);
+        }
+
+        static void Feladat6()
+        {
+            int osszeg = 0;
+
+            for (int i = 0; i < autok.Count; i++)
+            {
+                osszeg += autok[i].Eladott;
+            }
+
+            double atlag = (double)osszeg / autok.Count;
+
+            Console.WriteLine("6.feladat: Az autók esetében az átlagosan eladott darabszám {0:0.0}", atlag);
+        }
+
+        static void Feladat7()
+        {
+            Console.WriteLine("7.feladat: Az elmúlt 5 évben gyártott autók:");
+
+            int alsohatar = 2020;
+
+            for (int i = 0; i < autok.Count; i++)
+            {
+                if (autok[i].GyartasiEv >= alsohatar)
+                {
+                    Console.WriteLine("\t- " + autok[i].Marka + " " + autok[i].Modell + ": " + autok[i].GyartasiEv);
+                }
+            }
+        }
+
+        static void Feladat8()
+        {
+            Console.WriteLine("8. feladat: Legsikeresebb márkák listája az eladott darabszám alapján:");
+
+            // 1. Különböző márkák összegyűjtése
+            List<string> markak = new List<string>();
+
+            for (int i = 0; i < autok.Count; i++)
+            {
+                string marka = autok[i].Marka;
+
+                if (!markak.Contains(marka))
+                {
+                    markak.Add(marka);
+                }
+            }
+
+            // 2. Minden márkához összesítjük az eladásokat
+            List<string> eredmenyMarka = new List<string>();
+            List<int> eredmenyEladas = new List<int>();
+
+            for (int i = 0; i < markak.Count; i++)
+            {
+                string aktualisMarka = markak[i];
+                int darab = 0;
+
+                // végigmegyünk az összes autón és összeadjuk amelyik ehhez a márkához tartozik
+                for (int j = 0; j < autok.Count; j++)
+                {
+                    if (autok[j].Marka == aktualisMarka)
+                    {
+                        darab += autok[j].Eladott;
+                    }
+                }
+
+                eredmenyMarka.Add(aktualisMarka);
+                eredmenyEladas.Add(darab);
+            }
+
+            // 3. Rendezés buborékrendezés-szerű (kezdő módon)
+            for (int i = 0; i < eredmenyEladas.Count - 1; i++)
+            {
+                for (int j = i + 1; j < eredmenyEladas.Count; j++)
+                {
+                    if (eredmenyEladas[j] > eredmenyEladas[i])
+                    {
+                        int temp = eredmenyEladas[i];
+                        eredmenyEladas[i] = eredmenyEladas[j];
+                        eredmenyEladas[j] = temp;
+
+                        string temps = eredmenyMarka[i];
+                        eredmenyMarka[i] = eredmenyMarka[j];
+                        eredmenyMarka[j] = temps;
+                    }
+                }
+            }
+
+            // 4. Kiírás
+            for (int i = 0; i < eredmenyMarka.Count; i++)
+            {
+                Console.WriteLine("\t- " + eredmenyMarka[i] + ": " + eredmenyEladas[i] + " darab");
+            }
+        }
+
+
+
+    }
+}
+
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Hantos-console
+----------------
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.IO;
+            
+                    
+namespace filmapp
+{
+    internal class Film
+    {
+        public int Sorszam {  get; set; }
+        public string Cim {  get; set; }
+        public string Mufaj {  get; set; }
+        public int BemutatasiEv { get; set; }
+        public string Rendezo { get; set; }
+        public int Nezoszam { get; set; }
+        public double AtlagosJegyar { get; set; }
+
+        public Film (string sor)
+        {
+            string[] sor2 = sor.Split(';');
+
+            Sorszam = Convert.ToInt32(sor2[0]);
+            Cim = sor2[1];
+            Mufaj = sor2[2];
+            BemutatasiEv = Convert.ToInt32(sor2[3]);
+            Rendezo = sor2[4];
+            Nezoszam = Convert.ToInt32(sor2[5]);
+            AtlagosJegyar = Convert.ToDouble(sor2[6].Replace('.', ','));
+        }
+
+        public static List<Film> Beolvasas(string fajlnev)
+        {
+            List<Film> filmek = new List<Film>();
+            string[] sorok = File.ReadAllLines(fajlnev);
+            for (int i = 1; i < sorok.Length; i++)
+            {
+                if (!string.IsNullOrWhiteSpace(sorok[i]))
+                {
+                    filmek.Add(new Film(sorok[i]));
+                }
+            }
+            return filmek;
+        }
+    }
+    
+
+    internal class Program
+    {
+        static List<Film> filmek = new List<Film>();
+        static void Main(string[] args)
+        {
+            Feladat4();
+            Feladat5();
+            Feladat6();
+            Feladat7();
+            Feladat8();
+
+            Console.ReadKey();
+        }
+
+        static void Feladat4()
+        {
+            filmek = Film.Beolvasas("filmek.csv");
+        }
+
+        static void Feladat5()
+        {
+            Console.WriteLine("5. feladat: {0} film található az állományban", filmek.Count);
+        }
+
+        static void Feladat6()
+        {
+            int osszeg = 0;
+
+            for (int i = 0; i < filmek.Count; i++)
+            {
+                osszeg += filmek[i].Nezoszam;
+            }
+
+            double atlag = (double)osszeg / filmek.Count;
+
+            Console.WriteLine("6.feladat: A filmek átlagos nézőszáma {0:0.0} fő", atlag);
+        }
+
+        static void Feladat7()
+        {
+            Console.WriteLine("7. feladat: 2018 után megjelent, népszerű filmek:");
+
+            int NezoAlsohatar = 1000000;
+            int EvAlsohatar = 2018;
+
+            for (int i = 0; i < filmek.Count; i++)
+            {
+                if (filmek[i].Nezoszam > NezoAlsohatar && filmek[i].BemutatasiEv > EvAlsohatar)
+                {
+                    Console.WriteLine("\t-" + filmek[i].Cim + " (" + filmek[i].BemutatasiEv + ")");
+                }
+            }
+        }
+
+        static void Feladat8()
+        {
+            Console.WriteLine("8. feladat: Műfajok összesített nézőszáma:");
+
+            Dictionary<string, int> mufajNezoszam = new Dictionary<string, int>();
+
+            //osszegzes mufajonkent
+            for (int i = 0; i < filmek.Count; i++)
+            {
+                string mufaj = filmek[i].Mufaj;
+                int nezoszam = filmek[i].Nezoszam;
+
+                if (mufajNezoszam.ContainsKey(mufaj))
+                {
+                    mufajNezoszam[mufaj] += nezoszam;
+                }
+                else
+                {
+                    mufajNezoszam.Add(mufaj, nezoszam);
+                }
+            }
+
+            //csokkenobe rendezes
+            var rendezett = mufajNezoszam.OrderByDescending(x => x.Value);
+
+            //kiiras
+            foreach (var item in rendezett)
+            {
+                Console.WriteLine($"\t-  {item.Key}: {item.Value} fő");
+                
+            }
+        }
+    }
+
+
+}
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Simon norbis
+--------------
+
+        private void kilep_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        private void rogzit_Click(object sender, EventArgs e)
+        {
+            this.minta2TableAdapter.Insert(nev.Text, dateTimePicker1.Value, lakcim.Text, szulhely.Text, Convert.ToInt32(irszam.Text));
+            this.minta2TableAdapter.Fill(this.csehBendeguzDataSet1.minta2);
+
+        }
+
+        private void modosit_Click(object sender, EventArgs e)
+        {
+            this.minta2BindingSource.EndEdit();
+            this.minta2TableAdapter.Update(this.csehBendeguzDataSet1.minta2);
+            this.minta2TableAdapter.Fill(this.csehBendeguzDataSet1.minta2);
+
+        }
+
+        private void torol_Click(object sender, EventArgs e)
+        {
+            this.minta2BindingSource.RemoveCurrent();
+            this.minta2TableAdapter.Update(this.csehBendeguzDataSet1);
+            this.minta2TableAdapter.Fill(this.csehBendeguzDataSet1.minta2);
+
+        }
+    }
+}
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Simon norbis
+--------------
+
+
+        private void kilep_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void hozzaad_Click(object sender, EventArgs e)
+        {
+            this.tablaTableAdapter.Insert(textBox1.Text, dateTimePicker1.Value, textBox2.Text, textBox3.Text, Convert.ToInt32(textBox4.Text));
+            this.tablaTableAdapter.Fill(this.database1DataSet1.tabla);
+
+        }
+
+        private void modosit_Click(object sender, EventArgs e)
+        {
+            this.tablaBindingSource.EndEdit();
+            this.tablaTableAdapter.Update(this.database1DataSet1.tabla);
+            this.tablaTableAdapter.Fill(this.database1DataSet1.tabla);
+        }
+
+        private void torol_Click(object sender, EventArgs e)
+        {
+
+            this.tablaBindingSource.RemoveCurrent();
+            this.tablaTableAdapter.Update(this.database1DataSet1);
+            this.tablaTableAdapter.Fill(this.database1DataSet1.tabla);
+        }
+    }
+}
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Simon Norbis
+--------------
+
+        private void kilep_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void irszam_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Rogzit_Click(object sender, EventArgs e)
+        {
+            this.tableTableAdapter.Insert(nev.Text,szulid.Value,lakcim.Text,szulohely.Text,Convert.ToInt32(irszam.Text));
+            this.tableTableAdapter.Fill(this.database1DataSet.Table);
+        }
+
+        private void Modosit_Click(object sender, EventArgs e)
+        {
+            this.tableBindingSource.EndEdit();
+            this.tableTableAdapter.Update(this.database1DataSet.Table);
+            this.tableTableAdapter.Fill(this.database1DataSet.Table);
+        }
+
+        private void Torol_Click(object sender, EventArgs e)
+        {
+            this.tableBindingSource.RemoveCurrent();
+            this.tableTableAdapter.Update(this.database1DataSet.Table);
+            this.tableTableAdapter.Fill(this.database1DataSet.Table);
+        }
+    }
+}
+
+copy if newer 
+auto increment
+
+
+
+tabla
+rogzit
+modosit
+torol
+4 txt boksz
+1 datetimepicker
+
+
+1projekt letrehozas - Windows forms app .net frame
+nev-osztaly projekt nev
+asztal/"nev" konyvtar
+2 kifenykepezett form-azt kell letrehozni
+3 local db / sajat nev
+copy if newer-tabla letrehozasa adott mezotipusokkal, identity-true
+4 sql query(adatok meglesznek adva, 4 sor)
+
+5 fill ertek a datagridbe
+  textobxok es datagrid hozzarendelese az adatbázishoz
+6 3funkcio kilepes gomb-mukodjon jol
+7 aztán hasznalni kell a gombokat
+
+
+
+
+SQL PARANCS
+INSERT INTO tabla_neve (nev, szulid, lakcim, szulhely, irszam) VALUES
+('Kovács Bence', '2004-05-12', 'Petőfi utca 14.', 'Zalaegerszeg', 8900),
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Varga marci backend-frontend szopas
+------------------------------------
+
+const express = require('express');
+const mariadb = require('mariadb');
+const bodyParser = require ('body-parser');
+const cors = require('cors');
+const bcrypt = require('bcrypt');
+const app = express();
+const port = 3000;
+
+app.use(cors());
+app.use(express.json());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended : true}));
+
+const pool = mariadb.createPool({
+    host:"localhost",
+    user:"root",
+    password:"HZF12kj92FF**//",
+    database:"gyak0416",
+    port:"3306",
+    connectionLimit: 5
+
+});
+
+    app.get('/lists', async (req, res) => {
+        let conn;
+        try{
+
+            conn = await pool.getConnection();
+            const rows = await conn.query("SELECT * FROM alkalmazottak");
+            res.json(rows);
+        }catch (err){
+            console.error(err);
+            res.status(500).send('gatya');
+        }finally {
+            if(conn) conn.end();
+        }
+
+});
+
+app.get('/tasks', async (req, res) => {
+    let conn;
+    try{
+
+        conn = await pool.getConnection();
+        const rows = await conn.query("SELECT * FROM táblanév");
+        res.json(rows);
+    }catch (err){
+        console.error(err);
+        res.status(500).send('gatya');
+    }finally {
+        if(conn) conn.end();
+    }
+
+});
+
+app.post('/mentesek' ,async (req,res) => {
+    let conn;
+    try{
+        conn = await pool.getConnection();
+        const {vezeteknev, keresztnev, kor,jelszo } = req.body;
+        const result = await conn.query("INSERT INTO alkalmazottak (vezeteknev, keresztnev, kor,password_hash, belepes_datuma) VALUES (?, ?, ?, ?, ?)",
+        [vezeteknev, keresztnev, kor,jelszo]);
+        res.json({message: "Sikeres mentés"});
+    } catch {   
+       console.error(err);
+       res.status(500).send('Sikertelen feltöltés');
+        } finally {
+        if (conn) conn.end();
+    }
+
+})
+
+app.listen(port, () => {
+    console.log(`A szerver fut a ${port} porton!`);
+
+})
+
+
+
+
+
+
+
+C:\Users\Csehb>mkdir gyakorlas2 (letrehozas)
+
+C:\Users\Csehb>cd gyakorlas2 (belepes konyvtarba)
+
+C:\Users\Csehb\gyakorlas2>mkdir backend (letrehozas)
+
+C:\Users\Csehb\gyakorlas2>cd backend (belepes konyvtarba)
+
+C:\Users\Csehb\gyakorlas2\backend>npm init (inicializalas)
+
+Press ^C at any time to quit.
+package name: (backend)
+version: (1.0.0)
+description:
+entry point: (index.js)
+test command:
+git repository:
+keywords:
+author:
+license: (ISC)
+About to write to C:\Users\Csehb\gyakorlas2\backend\package.json:
+
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
+
+
+Is this OK? (yes)
+
+
+C:\Users\Csehb\gyakorlas2\backend>
+C:\Users\Csehb\gyakorlas2\backend>npm install express mariadb body-parser cors bcrypt (letolt adatbazis hasznalo asszem)
+
+
+elinditas = node .
+
+
+
+
+C:\Users\Csehb>cd gyak0416 (belepes)
+
+C:\Users\Csehb>cd gyakorlas2(belepes)
+
+
+C:\Users\Csehb\gyakorlas2>npm create vue@latest (vue letolt)
+Need to install the following packages:
+create-vue@3.22.2
+Ok to proceed? (y) y
+
+
+> npx
+> create-vue
+
+T  Vue.js - The Progressive JavaScript Framework
+|
+o  Project name (target directory):
+|  vue-project
+|
+o  Use TypeScript?
+|  Yes
+|
+o  Select features to include in your project: (↑/↓ to navigate, space to select, a to toggle all, enter to
+|  confirm)
+|  none
+|
+o  Select experimental features to include in your project: (↑/↓ to navigate, space to select, a to toggle
+|  all, enter to confirm)
+|  none
+|
+o  Skip all example code and start with a blank Vue project?
+|  No
+
+Scaffolding project in C:\Users\Csehb\gyakorlas2\vue-project...
+|
+—  Done. Now run:
+
+   cd vue-project
+   npm install
+   npm run dev
+
+
+C:\Users\Csehb\gyakorlas2>
+C:\Users\Csehb\gyakorlas2>npm create vue@latest
+
+> npx
+> create-vue
+
+T  Vue.js - The Progressive JavaScript Framework
+|
+o  Project name (target directory):
+|  frontend
+|
+o  Use TypeScript?
+|  No
+|
+o  Select features to include in your project: (↑/↓ to navigate, space to select, a to toggle all, enter to
+|  confirm)
+|  Router (SPA development), Linter (error prevention), Prettier (code formatting)
+|
+o  Select experimental features to include in your project: (↑/↓ to navigate, space to select, a to toggle
+|  all, enter to confirm)
+|  none
+|
+o  Skip all example code and start with a blank Vue project?
+|  No
+
+Scaffolding project in C:\Users\Csehb\gyakorlas2\frontend...
+|
+—  Done. Now run:
+
+   cd frontend
+   npm install
+   npm run format
+   npm run dev
+
+
+
+C:\Users\Csehb\gyakorlas2>
+
+
+!!!!src ben app.vuet kicserelni majd megadott mappara!!!!
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+vizsga feladatok 20260517
